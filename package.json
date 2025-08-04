@@ -1,0 +1,14 @@
+{
+  "name": "llac-house",
+  "version": "1.0.0",
+  "description": "LLACハウス - あなたの理想のお家づくり",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["house", "llac", "homepage", "cute", "design"],
+  "author": "LLACハウス",
+  "license": "MIT"
+}
