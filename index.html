@@ -3,116 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLACハウス - あなたの理想のお家づくり</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>筋肉タイピング - Touch Typing Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'Meiryo', 'メイリオ', sans-serif;
+            background: linear-gradient(135deg, #ffeef8, #e8f5ff, #fff0e8);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff6b9d;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: linear-gradient(45deg, #ffc3d7, #c3e8ff);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .word-display {
+            background: linear-gradient(45deg, #ffe8f5, #e8f0ff);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 2px;
+        }
+
+        .romaji-display {
+            font-size: 1.2em;
+            color: #888;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .input-area {
+            margin: 20px 0;
+        }
+
+        #typing-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.5em;
+            border: 3px solid #ffc3d7;
+            border-radius: 15px;
+            outline: none;
+            text-align: center;
+            background: linear-gradient(45deg, #fff8fc, #f8fcff);
+            font-family: 'Courier New', monospace;
+        }
+
+        #typing-input:focus {
+            border-color: #ff6b9d;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .correct {
+            color: #4CAF50;
+        }
+
+        .incorrect {
+            color: #f44336;
+        }
+
+        .buttons {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #ff6b9d, #ffa8cc);
+            color: white;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .reset-button {
+            background: linear-gradient(45deg, #66b3ff, #99ccff);
+            color: white;
+        }
+
+        .reset-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 179, 255, 0.4);
+        }
+
+        .game-over {
+            background: linear-gradient(45deg, #ffeb3b, #fff176);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #ff6b9d, #ffa8cc);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .word-display {
+                font-size: 2em;
+                padding: 20px;
+            }
+            
+            .game-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="logo">
-                    <h1>🏠 LLACハウス</h1>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="#home">ホーム</a></li>
-                    <li><a href="#services">サービス</a></li>
-                    <li><a href="#features">特徴</a></li>
-                    <li><a href="#contact">お問い合わせ</a></li>
-                </ul>
+    <div class="game-container">
+        <h1>💪 筋肉タイピング 💪</h1>
+        
+        <div class="game-stats">
+            <div class="stat-box">
+                <div class="stat-number" id="timer">60</div>
+                <div class="stat-label">残り時間(秒)</div>
             </div>
-        </nav>
-    </header>
-
-    <main>
-        <section id="home" class="hero">
-            <div class="hero-content">
-                <h2>🌸 夢のお家を一緒に作りましょう 🌸</h2>
-                <p>LLACハウスは、あなたの理想のライフスタイルに合わせた<br>
-                   温かみのある住まいづくりをお手伝いします</p>
-                <button class="cta-button">✨ 無料相談を始める ✨</button>
+            <div class="stat-box">
+                <div class="stat-number" id="score">0</div>
+                <div class="stat-label">スコア</div>
             </div>
-            <div class="hero-image">
-                <div class="house-illustration">🏡</div>
+            <div class="stat-box">
+                <div class="stat-number" id="wpm">0</div>
+                <div class="stat-label">WPM</div>
             </div>
-        </section>
-
-        <section id="services" class="services">
-            <div class="container">
-                <h2>🌟 私たちのサービス 🌟</h2>
-                <div class="services-grid">
-                    <div class="service-card">
-                        <div class="service-icon">🏗️</div>
-                        <h3>注文住宅</h3>
-                        <p>お客様のライフスタイルに合わせたオーダーメイドの住まい</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">🎨</div>
-                        <h3>リフォーム</h3>
-                        <p>既存のお家を素敵に生まれ変わらせるリノベーション</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">💡</div>
-                        <h3>インテリア相談</h3>
-                        <p>お部屋をもっと可愛く、居心地よくするご提案</p>
-                    </div>
-                </div>
+            <div class="stat-box">
+                <div class="stat-number" id="accuracy">100</div>
+                <div class="stat-label">正確率(%)</div>
             </div>
-        </section>
-
-        <section id="features" class="features">
-            <div class="container">
-                <h2>💕 LLACハウスの特徴 💕</h2>
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <h3>🌺 可愛いデザイン</h3>
-                        <p>女性目線で考えた、心がときめく可愛らしいデザインを大切にしています</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>🤗 安心サポート</h3>
-                        <p>お打ち合わせから完成まで、専任スタッフが丁寧にサポートします</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>♻️ 自然素材</h3>
-                        <p>体に優しい自然素材を使用し、家族みんなが健康で過ごせる住まいを</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>💰 適正価格</h3>
-                        <p>無駄を省いた効率的な施工で、質の高い住まいをお手頃価格で</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2>📞 お問い合わせ 📞</h2>
-                <div class="contact-content">
-                    <div class="contact-info">
-                        <h3>🏠 LLACハウス</h3>
-                        <p>📍 〒000-0000 東京都◯◯区◯◯</p>
-                        <p>📞 TEL: 03-0000-0000</p>
-                        <p>📧 EMAIL: info@llachouse.com</p>
-                        <p>🕐 営業時間: 9:00-18:00（土日祝も営業）</p>
-                    </div>
-                    <div class="contact-form">
-                        <form>
-                            <input type="text" placeholder="お名前" required>
-                            <input type="email" placeholder="メールアドレス" required>
-                            <input type="tel" placeholder="電話番号">
-                            <textarea placeholder="ご相談内容をお聞かせください" rows="5" required></textarea>
-                            <button type="submit">💌 送信する</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 LLACハウス. All rights reserved. 🌸</p>
         </div>
-    </footer>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div class="word-display" id="word-display">
+            <div>
+                <div class="romaji-display" id="romaji-display">スタートボタンを押してください</div>
+                <div>筋肉タイピングゲーム</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="typing-input" placeholder="ここにローマ字を入力..." disabled>
+        </div>
+
+        <div class="buttons">
+            <button class="start-button" id="start-button">ゲーム開始</button>
+            <button class="reset-button" id="reset-button">リセット</button>
+        </div>
+
+        <div class="game-over" id="game-over">
+            <h2>ゲーム終了！</h2>
+            <p id="final-score">お疲れさまでした！</p>
+        </div>
+    </div>
+
+    <script>
+        class TypingGame {
+            constructor() {
+                this.words = [
+                    { japanese: '大胸筋', romaji: 'daiokyoukin' },
+                    { japanese: '三角筋', romaji: 'sankakukin' },
+                    { japanese: '上腕二頭筋', romaji: 'jouwannitoukin' },
+                    { japanese: '上腕三頭筋', romaji: 'jouwansantoukin' },
+                    { japanese: '前腕筋', romaji: 'zenwaankin' },
+                    { japanese: '腹直筋', romaji: 'fukuchokukin' },
+                    { japanese: '腹斜筋', romaji: 'fukushakin' },
+                    { japanese: '大腿四頭筋', romaji: 'daitaishitoukin' },
+                    { japanese: 'ハムストリング', romaji: 'hamusutoringu' },
+                    { japanese: '大殿筋', romaji: 'daidenkin' },
+                    { japanese: '広背筋', romaji: 'kouhaikin' },
+                    { japanese: '僧帽筋', romaji: 'soucapkin' },
+                    { japanese: '脊柱起立筋', romaji: 'sekichukkiritsukin' },
+                    { japanese: 'ふくらはぎ', romaji: 'fukurahagi' },
+                    { japanese: '前脛骨筋', romaji: 'zenkokotsukin' },
+                    { japanese: '棘上筋', romaji: 'kyokujoukin' },
+                    { japanese: '棘下筋', romaji: 'kyokutakin' },
+                    { japanese: '小円筋', romaji: 'shouenkin' },
+                    { japanese: '肩甲下筋', romaji: 'kenkokakin' },
+                    { japanese: '腸腰筋', romaji: 'chouyoukin' }
+                ];
+                
+                this.currentWordIndex = 0;
+                this.score = 0;
+                this.timeLeft = 60;
+                this.isGameActive = false;
+                this.typedCharacters = 0;
+                this.correctCharacters = 0;
+                this.gameTimer = null;
+                this.currentInput = '';
+                
+                this.initializeElements();
+                this.setupEventListeners();
+            }
+
+            initializeElements() {
+                this.wordDisplay = document.getElementById('word-display');
+                this.romajiDisplay = document.getElementById('romaji-display');
+                this.typingInput = document.getElementById('typing-input');
+                this.timerDisplay = document.getElementById('timer');
+                this.scoreDisplay = document.getElementById('score');
+                this.wpmDisplay = document.getElementById('wpm');
+                this.accuracyDisplay = document.getElementById('accuracy');
+                this.startButton = document.getElementById('start-button');
+                this.resetButton = document.getElementById('reset-button');
+                this.gameOverDiv = document.getElementById('game-over');
+                this.finalScoreP = document.getElementById('final-score');
+                this.progressBar = document.getElementById('progress');
+            }
+
+            setupEventListeners() {
+                this.startButton.addEventListener('click', () => this.startGame());
+                this.resetButton.addEventListener('click', () => this.resetGame());
+                this.typingInput.addEventListener('input', (e) => this.handleInput(e));
+                this.typingInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && this.isGameActive) {
+                        this.checkWord();
+                    }
+                });
+            }
+
+            startGame() {
+                this.isGameActive = true;
+                this.typingInput.disabled = false;
+                this.typingInput.focus();
+                this.startButton.disabled = true;
+                this.gameOverDiv.style.display = 'none';
+                
+                this.shuffleWords();
+                this.displayCurrentWord();
+                this.startTimer();
+            }
+
+            shuffleWords() {
+                for (let i = this.words.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.words[i], this.words[j]] = [this.words[j], this.words[i]];
+                }
+            }
+
+            displayCurrentWord() {
+                if (this.currentWordIndex < this.words.length) {
+                    const currentWord = this.words[this.currentWordIndex];
+                    this.wordDisplay.innerHTML = `
+                        <div>
+                            <div class="romaji-display">${currentWord.romaji}</div>
+                            <div>${currentWord.japanese}</div>
+                        </div>
+                    `;
+                } else {
+                    this.currentWordIndex = 0;
+                    this.shuffleWords();
+                    this.displayCurrentWord();
+                }
+            }
+
+            handleInput(e) {
+                if (!this.isGameActive) return;
+                
+                this.currentInput = e.target.value.toLowerCase();
+                this.typedCharacters++;
+                
+                const currentWord = this.words[this.currentWordIndex];
+                const targetRomaji = currentWord.romaji.toLowerCase();
+                
+                // リアルタイムフィードバック
+                if (targetRomaji.startsWith(this.currentInput)) {
+                    this.typingInput.className = 'correct';
+                    if (this.currentInput === targetRomaji) {
+                        this.correctWord();
+                    }
+                } else {
+                    this.typingInput.className = 'incorrect';
+                }
+            }
+
+            correctWord() {
+                this.score += 10;
+                this.correctCharacters += this.currentInput.length;
+                this.typingInput.value = '';
+                this.currentInput = '';
+                this.typingInput.className = '';
+                this.currentWordIndex++;
+                this.displayCurrentWord();
+                this.updateStats();
+            }
+
+            checkWord() {
+                const currentWord = this.words[this.currentWordIndex];
+                if (this.currentInput === currentWord.romaji.toLowerCase()) {
+                    this.correctWord();
+                }
+            }
+
+            startTimer() {
+                this.gameTimer = setInterval(() => {
+                    this.timeLeft--;
+                    this.timerDisplay.textContent = this.timeLeft;
+                    
+                    // プログレスバーの更新
+                    const progress = ((60 - this.timeLeft) / 60) * 100;
+                    this.progressBar.style.width = progress + '%';
+                    
+                    if (this.timeLeft <= 0) {
+                        this.endGame();
+                    }
+                    
+                    this.updateStats();
+                }, 1000);
+            }
+
+            updateStats() {
+                this.scoreDisplay.textContent = this.score;
+                
+                // WPM計算 (1分間あたりの単語数)
+                const timeElapsed = (60 - this.timeLeft) / 60;
+                const wpm = timeElapsed > 0 ? Math.round((this.score / 10) / timeElapsed) : 0;
+                this.wpmDisplay.textContent = wpm;
+                
+                // 正確率計算
+                const accuracy = this.typedCharacters > 0 ? 
+                    Math.round((this.correctCharacters / this.typedCharacters) * 100) : 100;
+                this.accuracyDisplay.textContent = accuracy;
+            }
+
+            endGame() {
+                this.isGameActive = false;
+                clearInterval(this.gameTimer);
+                this.typingInput.disabled = true;
+                this.startButton.disabled = false;
+                
+                const wpm = Math.round((this.score / 10) / 1);
+                const accuracy = this.typedCharacters > 0 ? 
+                    Math.round((this.correctCharacters / this.typedCharacters) * 100) : 100;
+                
+                this.finalScoreP.innerHTML = `
+                    最終スコア: ${this.score}点<br>
+                    WPM: ${wpm}<br>
+                    正確率: ${accuracy}%<br>
+                    よく頑張りました！💪
+                `;
+                
+                this.gameOverDiv.style.display = 'block';
+            }
+
+            resetGame() {
+                this.isGameActive = false;
+                clearInterval(this.gameTimer);
+                
+                this.currentWordIndex = 0;
+                this.score = 0;
+                this.timeLeft = 60;
+                this.typedCharacters = 0;
+                this.correctCharacters = 0;
+                this.currentInput = '';
+                
+                this.typingInput.value = '';
+                this.typingInput.disabled = true;
+                this.typingInput.className = '';
+                this.startButton.disabled = false;
+                this.gameOverDiv.style.display = 'none';
+                this.progressBar.style.width = '0%';
+                
+                this.wordDisplay.innerHTML = `
+                    <div>
+                        <div class="romaji-display">スタートボタンを押してください</div>
+                        <div>筋肉タイピングゲーム</div>
+                    </div>
+                `;
+                
+                this.timerDisplay.textContent = '60';
+                this.scoreDisplay.textContent = '0';
+                this.wpmDisplay.textContent = '0';
+                this.accuracyDisplay.textContent = '100';
+            }
+        }
+
+        // ゲーム初期化
+        window.addEventListener('DOMContentLoaded', () => {
+            new TypingGame();
+        });
+    </script>
 </body>
 </html>
