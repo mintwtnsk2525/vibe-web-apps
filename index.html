@@ -198,25 +198,78 @@
 
         .heart {
             position: absolute;
-            font-size: 20px;
-            color: #f472b6;
+            font-size: 24px;
             pointer-events: none;
-            animation: float-heart 3s ease-out forwards;
+            animation: float-heart 4s ease-out forwards;
+            z-index: 1;
+        }
+
+        .feather {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            animation: float-feather 5s ease-out forwards;
             z-index: 1;
         }
 
         @keyframes float-heart {
             0% {
                 opacity: 1;
-                transform: translateY(0) rotate(0deg) scale(1);
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+                filter: hue-rotate(0deg) drop-shadow(0 0 10px #ff69b4);
+            }
+            25% {
+                opacity: 0.9;
+                transform: translateY(-80px) translateX(30px) rotate(90deg) scale(1.3);
+                filter: hue-rotate(60deg) drop-shadow(0 0 15px #ff1493);
             }
             50% {
                 opacity: 0.8;
-                transform: translateY(-100px) rotate(180deg) scale(1.2);
+                transform: translateY(-160px) translateX(-20px) rotate(180deg) scale(1.1);
+                filter: hue-rotate(120deg) drop-shadow(0 0 20px #9370db);
+            }
+            75% {
+                opacity: 0.6;
+                transform: translateY(-240px) translateX(50px) rotate(270deg) scale(0.9);
+                filter: hue-rotate(180deg) drop-shadow(0 0 25px #00bfff);
             }
             100% {
                 opacity: 0;
-                transform: translateY(-200px) rotate(360deg) scale(0.5);
+                transform: translateY(-320px) translateX(-30px) rotate(360deg) scale(0.3);
+                filter: hue-rotate(240deg) drop-shadow(0 0 30px #87ceeb);
+            }
+        }
+
+        @keyframes float-feather {
+            0% {
+                opacity: 1;
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+                filter: hue-rotate(0deg) drop-shadow(0 0 8px #ffffff);
+            }
+            20% {
+                opacity: 0.9;
+                transform: translateY(-60px) translateX(-40px) rotate(45deg) scale(1.2);
+                filter: hue-rotate(45deg) drop-shadow(0 0 12px #f0f8ff);
+            }
+            40% {
+                opacity: 0.8;
+                transform: translateY(-120px) translateX(60px) rotate(90deg) scale(1.4);
+                filter: hue-rotate(90deg) drop-shadow(0 0 16px #e6e6fa);
+            }
+            60% {
+                opacity: 0.7;
+                transform: translateY(-180px) translateX(-30px) rotate(135deg) scale(1.1);
+                filter: hue-rotate(135deg) drop-shadow(0 0 20px #dda0dd);
+            }
+            80% {
+                opacity: 0.5;
+                transform: translateY(-240px) translateX(80px) rotate(180deg) scale(0.8);
+                filter: hue-rotate(180deg) drop-shadow(0 0 24px #98fb98);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-300px) translateX(-50px) rotate(225deg) scale(0.4);
+                filter: hue-rotate(225deg) drop-shadow(0 0 28px #ffb6c1);
             }
         }
 
@@ -228,6 +281,41 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+        }
+
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                rgba(255, 182, 193, 0.1), 
+                rgba(221, 160, 221, 0.1), 
+                rgba(173, 216, 230, 0.1), 
+                rgba(152, 251, 152, 0.1));
+            animation: aurora-shimmer 8s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes aurora-shimmer {
+            0%, 100% {
+                opacity: 0.3;
+                transform: translateX(0);
+            }
+            25% {
+                opacity: 0.6;
+                transform: translateX(10px);
+            }
+            50% {
+                opacity: 0.4;
+                transform: translateX(-5px);
+            }
+            75% {
+                opacity: 0.7;
+                transform: translateX(8px);
+            }
         }
 
         @media (max-width: 600px) {
@@ -300,6 +388,7 @@
         </div>
     </div>
 
+    <div class="aurora-bg" id="aurora-bg"></div>
     <div class="hearts-container" id="hearts-container"></div>
 
     <script>
@@ -338,6 +427,7 @@
                 this.currentInput = '';
                 this.bgmPlaying = false;
                 this.bgmAudio = null;
+                this.lastValidInput = '';
                 
                 this.initializeElements();
                 this.setupEventListeners();
@@ -422,25 +512,45 @@
             handleInput(e) {
                 if (!this.isGameActive) return;
                 
-                this.currentInput = e.target.value.toLowerCase();
-                this.typedCharacters++;
-                
+                const inputValue = e.target.value.toLowerCase();
                 const currentWord = this.words[this.currentWordIndex];
                 const targetRomaji = currentWord.romaji.toLowerCase();
                 
-                // 「ん」の特別処理（nでもnnでも可）
-                const normalizedInput = this.normalizeN(this.currentInput);
+                // 入力変換処理（fu=hu, cho=thoなど）
+                const convertedInput = this.convertInput(inputValue);
+                const normalizedInput = this.normalizeN(convertedInput);
                 const normalizedTarget = this.normalizeN(targetRomaji);
                 
-                // リアルタイムフィードバック
-                if (normalizedTarget.startsWith(normalizedInput) || this.checkPartialN(this.currentInput, targetRomaji)) {
+                // 正しい入力かチェック
+                if (normalizedTarget.startsWith(normalizedInput) || this.checkPartialInput(convertedInput, targetRomaji)) {
+                    this.currentInput = convertedInput;
+                    this.lastValidInput = convertedInput;
+                    this.typedCharacters++;
                     this.typingInput.className = 'correct';
+                    
                     if (normalizedInput === normalizedTarget) {
                         this.correctWord();
                     }
                 } else {
+                    // タイプミスの場合、入力を最後の正しい状態に戻す
+                    e.target.value = this.lastValidInput;
                     this.typingInput.className = 'incorrect';
+                    this.playErrorSound();
+                    
+                    // 短時間で赤色を解除
+                    setTimeout(() => {
+                        if (this.typingInput.className === 'incorrect') {
+                            this.typingInput.className = this.lastValidInput ? 'correct' : '';
+                        }
+                    }, 200);
                 }
+            }
+
+            convertInput(input) {
+                // fu=hu, cho=tho などの変換
+                return input
+                    .replace(/hu/g, 'fu')
+                    .replace(/tho/g, 'cho');
             }
 
             normalizeN(str) {
@@ -448,9 +558,10 @@
                 return str.replace(/nn/g, 'n');
             }
 
-            checkPartialN(input, target) {
-                // 部分的な「ん」の入力をチェック
-                const inputWithN = input.replace(/nn/g, 'n');
+            checkPartialInput(input, target) {
+                // 部分的な入力をチェック
+                const convertedInput = this.convertInput(input);
+                const inputWithN = convertedInput.replace(/nn/g, 'n');
                 const targetWithN = target.replace(/nn/g, 'n');
                 return targetWithN.startsWith(inputWithN);
             }
@@ -460,11 +571,12 @@
                 this.correctCharacters += this.currentInput.length;
                 this.typingInput.value = '';
                 this.currentInput = '';
+                this.lastValidInput = '';
                 this.typingInput.className = '';
                 this.currentWordIndex++;
                 this.displayCurrentWord();
                 this.updateStats();
-                this.createHeart();
+                this.createAngelic();
             }
 
             checkWord() {
@@ -476,19 +588,46 @@
                 }
             }
 
-            createHeart() {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.textContent = '💖';
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.top = '100%';
-                this.heartsContainer.appendChild(heart);
+            createAngelic() {
+                // ハートを複数作成
+                const hearts = ['💖', '💕', '😇', '💜', '🤍'];
+                const feathers = ['🪶', '✨', '🌟', '☄️', '🌠'];
                 
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.parentNode.removeChild(heart);
-                    }
-                }, 3000);
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart';
+                        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                        heart.style.left = (Math.random() * 80 + 10) + '%';
+                        heart.style.top = '100%';
+                        heart.style.color = `hsl(${Math.random() * 360}, 70%, 70%)`;
+                        this.heartsContainer.appendChild(heart);
+                        
+                        setTimeout(() => {
+                            if (heart.parentNode) {
+                                heart.parentNode.removeChild(heart);
+                            }
+                        }, 4000);
+                    }, i * 100);
+                }
+                
+                for (let i = 0; i < 2; i++) {
+                    setTimeout(() => {
+                        const feather = document.createElement('div');
+                        feather.className = 'feather';
+                        feather.textContent = feathers[Math.floor(Math.random() * feathers.length)];
+                        feather.style.left = (Math.random() * 80 + 10) + '%';
+                        feather.style.top = '100%';
+                        feather.style.color = `hsl(${Math.random() * 60 + 180}, 60%, 80%)`;
+                        this.heartsContainer.appendChild(feather);
+                        
+                        setTimeout(() => {
+                            if (feather.parentNode) {
+                                feather.parentNode.removeChild(feather);
+                            }
+                        }, 5000);
+                    }, i * 150);
+                }
             }
 
             initializeBGM() {
@@ -545,8 +684,64 @@
                     this.bgmAudio.start();
                     this.bgmButton.textContent = '🔇 BGM OFF';
                     
+                    // 効果音用のオーディオコンテキストを作成
+                    this.effectAudioContext = audioContext;
+                    
                 } catch (e) {
                     console.log('Web Audio API not supported');
+                }
+            }
+
+            playErrorSound() {
+                if (!this.effectAudioContext) return;
+                
+                try {
+                    const oscillator = this.effectAudioContext.createOscillator();
+                    const gainNode = this.effectAudioContext.createGain();
+                    
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(150, this.effectAudioContext.currentTime);
+                    
+                    gainNode.gain.setValueAtTime(0.1, this.effectAudioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.effectAudioContext.currentTime + 0.1);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.effectAudioContext.destination);
+                    
+                    oscillator.start(this.effectAudioContext.currentTime);
+                    oscillator.stop(this.effectAudioContext.currentTime + 0.1);
+                } catch (e) {
+                    console.log('Error sound failed');
+                }
+            }
+
+            playGameOverSound() {
+                if (!this.effectAudioContext) return;
+                
+                try {
+                    // ドーン音を作成
+                    const oscillator1 = this.effectAudioContext.createOscillator();
+                    const oscillator2 = this.effectAudioContext.createOscillator();
+                    const gainNode = this.effectAudioContext.createGain();
+                    
+                    oscillator1.type = 'sawtooth';
+                    oscillator2.type = 'square';
+                    oscillator1.frequency.setValueAtTime(80, this.effectAudioContext.currentTime);
+                    oscillator2.frequency.setValueAtTime(120, this.effectAudioContext.currentTime);
+                    
+                    gainNode.gain.setValueAtTime(0.3, this.effectAudioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.effectAudioContext.currentTime + 1);
+                    
+                    oscillator1.connect(gainNode);
+                    oscillator2.connect(gainNode);
+                    gainNode.connect(this.effectAudioContext.destination);
+                    
+                    oscillator1.start(this.effectAudioContext.currentTime);
+                    oscillator2.start(this.effectAudioContext.currentTime);
+                    oscillator1.stop(this.effectAudioContext.currentTime + 1);
+                    oscillator2.stop(this.effectAudioContext.currentTime + 1);
+                } catch (e) {
+                    console.log('Game over sound failed');
                 }
             }
 
@@ -598,6 +793,13 @@
                 clearInterval(this.gameTimer);
                 this.typingInput.disabled = true;
                 
+                // BGMをドーン音で停止
+                this.playGameOverSound();
+                if (this.bgmAudio && this.bgmPlaying) {
+                    this.bgmAudio.stop();
+                    this.bgmButton.textContent = '🎵 BGM ON';
+                }
+                
                 const wpm = Math.round((this.score / 10) / 1);
                 const accuracy = this.typedCharacters > 0 ? 
                     Math.round((this.correctCharacters / this.typedCharacters) * 100) : 100;
@@ -624,6 +826,7 @@
                 this.currentInput = '';
                 
                 this.typingInput.value = '';
+                this.lastValidInput = '';
                 this.typingInput.disabled = false;
                 this.typingInput.className = '';
                 this.gameOverDiv.style.display = 'none';
