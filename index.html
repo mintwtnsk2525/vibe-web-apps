@@ -13,30 +13,35 @@
 
         body {
             font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'Meiryo', 'メイリオ', sans-serif;
-            background: linear-gradient(135deg, #ffeef8, #e8f5ff, #fff0e8);
+            background: linear-gradient(135deg, #f0e6ff, #ffe6f0, #e6fff0, #fff0e6, #e6f0ff);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255, 240, 255, 0.95), rgba(240, 255, 250, 0.95));
+            border-radius: 30px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(200, 150, 255, 0.2);
             max-width: 800px;
             width: 100%;
             text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 2px solid rgba(255, 200, 255, 0.3);
         }
 
         h1 {
-            color: #ff6b9d;
+            color: #8b5cf6;
             font-size: 2.5em;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 2px 2px 8px rgba(139, 92, 246, 0.3);
         }
 
         .game-stats {
@@ -47,43 +52,47 @@
         }
 
         .stat-box {
-            background: linear-gradient(45deg, #ffc3d7, #c3e8ff);
+            background: linear-gradient(45deg, #ddd6fe, #fce7f3, #dcfce7, #fef3c7);
             padding: 15px 20px;
-            border-radius: 15px;
+            border-radius: 20px;
             margin: 5px;
             min-width: 120px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .stat-number {
             font-size: 1.8em;
             font-weight: bold;
-            color: #4a4a4a;
+            color: #7c3aed;
         }
 
         .stat-label {
             font-size: 0.9em;
-            color: #666;
+            color: #a855f7;
             margin-top: 5px;
         }
 
         .word-display {
-            background: linear-gradient(45deg, #ffe8f5, #e8f0ff);
-            border-radius: 15px;
+            background: linear-gradient(45deg, #f3e8ff, #fef7ff, #ecfdf5);
+            border-radius: 25px;
             padding: 30px;
             margin: 30px 0;
             font-size: 2.5em;
             font-weight: bold;
-            color: #333;
+            color: #6b21a8;
             min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
             letter-spacing: 2px;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+            border: 2px solid rgba(196, 181, 253, 0.3);
         }
 
         .romaji-display {
             font-size: 1.2em;
-            color: #888;
+            color: #a855f7;
             margin-bottom: 10px;
             font-family: 'Courier New', monospace;
         }
@@ -96,25 +105,30 @@
             width: 100%;
             padding: 15px 20px;
             font-size: 1.5em;
-            border: 3px solid #ffc3d7;
-            border-radius: 15px;
+            border: 3px solid #c4b5fd;
+            border-radius: 20px;
             outline: none;
             text-align: center;
-            background: linear-gradient(45deg, #fff8fc, #f8fcff);
+            background: linear-gradient(45deg, #faf5ff, #f0fdf4);
             font-family: 'Courier New', monospace;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
         }
 
         #typing-input:focus {
-            border-color: #ff6b9d;
-            box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+            border-color: #8b5cf6;
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
         }
 
         .correct {
-            color: #4CAF50;
+            background: linear-gradient(45deg, #dcfce7, #f0fdf4) !important;
+            border-color: #86efac !important;
+            color: #065f46;
         }
 
         .incorrect {
-            color: #f44336;
+            background: linear-gradient(45deg, #fecaca, #fee2e2) !important;
+            border-color: #fca5a5 !important;
+            color: #991b1b;
         }
 
         .buttons {
@@ -132,47 +146,88 @@
             font-weight: bold;
         }
 
-        .start-button {
-            background: linear-gradient(45deg, #ff6b9d, #ffa8cc);
-            color: white;
-        }
-
-        .start-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
-        }
-
         .reset-button {
-            background: linear-gradient(45deg, #66b3ff, #99ccff);
-            color: white;
+            background: linear-gradient(45deg, #c084fc, #ddd6fe);
+            color: #581c87;
+            border: 2px solid rgba(139, 92, 246, 0.3);
         }
 
         .reset-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 179, 255, 0.4);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .bgm-button {
+            background: linear-gradient(45deg, #fbbf24, #fde047);
+            color: #92400e;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .bgm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
         }
 
         .game-over {
-            background: linear-gradient(45deg, #ffeb3b, #fff176);
-            border-radius: 15px;
+            background: linear-gradient(45deg, #fef3c7, #fef7cd);
+            border-radius: 25px;
             padding: 20px;
             margin: 20px 0;
             display: none;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2);
+            color: #92400e;
         }
 
         .progress-bar {
-            background: #e0e0e0;
-            height: 8px;
-            border-radius: 4px;
+            background: linear-gradient(45deg, #e5e7eb, #f3f4f6);
+            height: 10px;
+            border-radius: 8px;
             overflow: hidden;
             margin: 10px 0;
+            box-shadow: inset 0 2px 4px rgba(139, 92, 246, 0.1);
         }
 
         .progress-fill {
-            background: linear-gradient(45deg, #ff6b9d, #ffa8cc);
+            background: linear-gradient(45deg, #8b5cf6, #a855f7, #c084fc);
             height: 100%;
             width: 0%;
             transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: #f472b6;
+            pointer-events: none;
+            animation: float-heart 3s ease-out forwards;
+            z-index: 1;
+        }
+
+        @keyframes float-heart {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-100px) rotate(180deg) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) rotate(360deg) scale(0.5);
+            }
+        }
+
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
         @media (max-width: 600px) {
@@ -236,6 +291,7 @@
 
         <div class="buttons">
             <button class="reset-button" id="reset-button">リセット</button>
+            <button class="bgm-button" id="bgm-button">🎵 BGM ON</button>
         </div>
 
         <div class="game-over" id="game-over">
@@ -243,6 +299,8 @@
             <p id="final-score">お疲れさまでした！</p>
         </div>
     </div>
+
+    <div class="hearts-container" id="hearts-container"></div>
 
     <script>
         class TypingGame {
@@ -278,9 +336,12 @@
                 this.correctCharacters = 0;
                 this.gameTimer = null;
                 this.currentInput = '';
+                this.bgmPlaying = false;
+                this.bgmAudio = null;
                 
                 this.initializeElements();
                 this.setupEventListeners();
+                this.initializeBGM();
             }
 
             initializeElements() {
@@ -295,10 +356,13 @@
                 this.gameOverDiv = document.getElementById('game-over');
                 this.finalScoreP = document.getElementById('final-score');
                 this.progressBar = document.getElementById('progress');
+                this.bgmButton = document.getElementById('bgm-button');
+                this.heartsContainer = document.getElementById('hearts-container');
             }
 
             setupEventListeners() {
                 this.resetButton.addEventListener('click', () => this.resetGame());
+                this.bgmButton.addEventListener('click', () => this.toggleBGM());
                 this.typingInput.addEventListener('input', (e) => this.handleInput(e));
                 this.typingInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && this.isGameActive) {
@@ -364,15 +428,31 @@
                 const currentWord = this.words[this.currentWordIndex];
                 const targetRomaji = currentWord.romaji.toLowerCase();
                 
+                // 「ん」の特別処理（nでもnnでも可）
+                const normalizedInput = this.normalizeN(this.currentInput);
+                const normalizedTarget = this.normalizeN(targetRomaji);
+                
                 // リアルタイムフィードバック
-                if (targetRomaji.startsWith(this.currentInput)) {
+                if (normalizedTarget.startsWith(normalizedInput) || this.checkPartialN(this.currentInput, targetRomaji)) {
                     this.typingInput.className = 'correct';
-                    if (this.currentInput === targetRomaji) {
+                    if (normalizedInput === normalizedTarget) {
                         this.correctWord();
                     }
                 } else {
                     this.typingInput.className = 'incorrect';
                 }
+            }
+
+            normalizeN(str) {
+                // 「ん」の処理：nn→n に統一
+                return str.replace(/nn/g, 'n');
+            }
+
+            checkPartialN(input, target) {
+                // 部分的な「ん」の入力をチェック
+                const inputWithN = input.replace(/nn/g, 'n');
+                const targetWithN = target.replace(/nn/g, 'n');
+                return targetWithN.startsWith(inputWithN);
             }
 
             correctWord() {
@@ -384,12 +464,88 @@
                 this.currentWordIndex++;
                 this.displayCurrentWord();
                 this.updateStats();
+                this.createHeart();
             }
 
             checkWord() {
                 const currentWord = this.words[this.currentWordIndex];
-                if (this.currentInput === currentWord.romaji.toLowerCase()) {
+                const normalizedInput = this.normalizeN(this.currentInput);
+                const normalizedTarget = this.normalizeN(currentWord.romaji.toLowerCase());
+                if (normalizedInput === normalizedTarget) {
                     this.correctWord();
+                }
+            }
+
+            createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = '100%';
+                this.heartsContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 3000);
+            }
+
+            initializeBGM() {
+                // Web Audio API を使用して水の音を生成
+                this.createWaterSound();
+            }
+
+            createWaterSound() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator1 = audioContext.createOscillator();
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    // 水の音に近い周波数設定
+                    oscillator1.frequency.setValueAtTime(200, audioContext.currentTime);
+                    oscillator2.frequency.setValueAtTime(400, audioContext.currentTime);
+                    
+                    oscillator1.type = 'sine';
+                    oscillator2.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    
+                    oscillator1.connect(gainNode);
+                    oscillator2.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    this.bgmAudio = {
+                        oscillators: [oscillator1, oscillator2],
+                        gainNode: gainNode,
+                        audioContext: audioContext,
+                        start: () => {
+                            oscillator1.start();
+                            oscillator2.start();
+                        },
+                        stop: () => {
+                            oscillator1.stop();
+                            oscillator2.stop();
+                        }
+                    };
+                } catch (e) {
+                    console.log('Web Audio API not supported');
+                }
+            }
+
+            toggleBGM() {
+                if (!this.bgmAudio) return;
+                
+                if (this.bgmPlaying) {
+                    this.bgmAudio.stop();
+                    this.bgmButton.textContent = '🎵 BGM ON';
+                    this.bgmPlaying = false;
+                    this.createWaterSound(); // 新しいオーディオコンテキストを作成
+                } else {
+                    this.bgmAudio.start();
+                    this.bgmButton.textContent = '🔇 BGM OFF';
+                    this.bgmPlaying = true;
                 }
             }
 
