@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Color Diagnosis - あなたに似合う色を見つけよう</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'Meiryo', 'メイリオ', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect width="1920" height="1080" fill="%23f8f1eb"/><circle cx="200" cy="150" r="80" fill="%23d4b69c" opacity="0.6"/><circle cx="800" cy="300" r="120" fill="%23c9a96e" opacity="0.4"/><circle cx="1200" cy="200" r="60" fill="%23b8956a" opacity="0.7"/><circle cx="400" cy="500" r="90" fill="%23dbc4a2" opacity="0.5"/><circle cx="1600" cy="400" r="110" fill="%23c2987a" opacity="0.6"/><circle cx="300" cy="800" r="70" fill="%23e5d5c3" opacity="0.4"/><circle cx="1000" cy="700" r="100" fill="%23d1b896" opacity="0.5"/><circle cx="1500" cy="800" r="85" fill="%23c7a783" opacity="0.6"/></svg>');
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            width: 100%;
+            transition: all 0.6s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a0522d;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .question-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .question-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .question-title {
+            font-size: 2rem;
+            color: #8b4513;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: #654321;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .option-button {
+            padding: 25px 20px;
+            border: 3px solid #deb887;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f5f5dc, #fff8dc);
+            color: #8b4513;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .option-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(139, 69, 19, 0.2);
+            border-color: #cd853f;
+            background: linear-gradient(135deg, #fff8dc, #fffacd);
+        }
+
+        .option-button:hover::before {
+            left: 100%;
+        }
+
+        .option-button.selected {
+            background: linear-gradient(135deg, #deb887, #f4a460);
+            border-color: #8b4513;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(139, 69, 19, 0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(222, 184, 135, 0.3);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #deb887, #f4a460, #cd853f);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .start-button, .next-button {
+            background: linear-gradient(135deg, #deb887, #f4a460);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(139, 69, 19, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .start-button:hover, .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.3);
+            background: linear-gradient(135deg, #f4a460, #cd853f);
+        }
+
+        .next-button {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transition: opacity 0.4s ease;
+        }
+
+        .next-button.enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            color: #8b4513;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .color-type {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .yellow-base {
+            background: linear-gradient(135deg, #ffeb3b, #ffc107, #ff9800);
+            color: #8b4513;
+        }
+
+        .blue-base {
+            background: linear-gradient(135deg, #2196f3, #00bcd4, #009688);
+            color: white;
+        }
+
+        .advice-section {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .advice-title {
+            font-size: 1.5rem;
+            color: #8b4513;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .advice-content {
+            background: rgba(245, 245, 220, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #deb887;
+        }
+
+        .advice-content h4 {
+            color: #8b4513;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .advice-content p {
+            color: #654321;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .color-swatch {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 30px;
+        }
+
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .content-card { padding: 40px 20px; }
+            .options-grid { grid-template-columns: 1fr; }
+            .question-title { font-size: 1.5rem; }
+            .color-type { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Section -->
+        <section class="section">
+            <div class="content-card" id="welcome">
+                <h1>Personal Color Diagnosis</h1>
+                <p class="subtitle">あなたに似合う色を見つけて、<br>より美しく輝くためのカラー診断</p>
+                <button class="start-button" onclick="startDiagnosis()">診断を始める</button>
+            </div>
+        </section>
+
+        <!-- Question Sections -->
+        <section class="section">
+            <div class="content-card">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="question-container active" id="question1">
+                    <h2 class="question-title">質問 1 / 8</h2>
+                    <p class="question-text">あなたの肌の色味はどちらに近いですか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(1, 'yellow', this)">
+                            黄みがかった温かみのある肌色
+                        </button>
+                        <button class="option-button" onclick="selectOption(1, 'blue', this)">
+                            青みがかった透明感のある肌色
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn1" onclick="nextQuestion(1)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question2">
+                    <h2 class="question-title">質問 2 / 8</h2>
+                    <p class="question-text">日焼けすると肌はどうなりますか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(2, 'yellow', this)">
+                            きれいに小麦色に焼ける
+                        </button>
+                        <button class="option-button" onclick="selectOption(2, 'blue', this)">
+                            赤くなってから元に戻る
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn2" onclick="nextQuestion(2)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question3">
+                    <h2 class="question-title">質問 3 / 8</h2>
+                    <p class="question-text">あなたの髪の色は自然な状態でどちらに近いですか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(3, 'yellow', this)">
+                            茶色っぽい、温かみのある黒
+                        </button>
+                        <button class="option-button" onclick="selectOption(3, 'blue', this)">
+                            真っ黒、クールな印象の黒
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn3" onclick="nextQuestion(3)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question4">
+                    <h2 class="question-title">質問 4 / 8</h2>
+                    <p class="question-text">あなたの瞳の色はどちらに近いですか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(4, 'yellow', this)">
+                            温かみのある茶色
+                        </button>
+                        <button class="option-button" onclick="selectOption(4, 'blue', this)">
+                            クールな黒、または灰色がかった茶色
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn4" onclick="nextQuestion(4)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question5">
+                    <h2 class="question-title">質問 5 / 8</h2>
+                    <p class="question-text">白い服を着た時の印象は？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(5, 'yellow', this)">
+                            オフホワイトやアイボリーが似合う
+                        </button>
+                        <button class="option-button" onclick="selectOption(5, 'blue', this)">
+                            純白やスノーホワイトが似合う
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn5" onclick="nextQuestion(5)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question6">
+                    <h2 class="question-title">質問 6 / 8</h2>
+                    <p class="question-text">ゴールドとシルバーのアクセサリー、どちらが似合うと言われますか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(6, 'yellow', this)">
+                            ゴールド系が似合う
+                        </button>
+                        <button class="option-button" onclick="selectOption(6, 'blue', this)">
+                            シルバー系が似合う
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn6" onclick="nextQuestion(6)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question7">
+                    <h2 class="question-title">質問 7 / 8</h2>
+                    <p class="question-text">あなたの印象・雰囲気はどちらに近いですか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(7, 'season', this)" data-season="spring">
+                            明るく華やか、可愛らしい印象
+                        </button>
+                        <button class="option-button" onclick="selectOption(7, 'season', this)" data-season="summer">
+                            上品で優雅、エレガントな印象
+                        </button>
+                        <button class="option-button" onclick="selectOption(7, 'season', this)" data-season="autumn">
+                            落ち着いて大人っぽい、シックな印象
+                        </button>
+                        <button class="option-button" onclick="selectOption(7, 'season', this)" data-season="winter">
+                            クールでシャープ、洗練された印象
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn7" onclick="nextQuestion(7)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question8">
+                    <h2 class="question-title">質問 8 / 8</h2>
+                    <p class="question-text">好きな色・着ていて気分が上がる色はどちらのグループですか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(8, 'season', this)" data-season="spring">
+                            明るいピンク、コーラル、イエローグリーン
+                        </button>
+                        <button class="option-button" onclick="selectOption(8, 'season', this)" data-season="summer">
+                            ラベンダー、ミントブルー、ローズピンク
+                        </button>
+                        <button class="option-button" onclick="selectOption(8, 'season', this)" data-season="autumn">
+                            テラコッタ、オリーブグリーン、マスタード
+                        </button>
+                        <button class="option-button" onclick="selectOption(8, 'season', this)" data-season="winter">
+                            ロイヤルブルー、エメラルドグリーン、フューシャピンク
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn8" onclick="showResult()">結果を見る</button>
+                </div>
+
+                <!-- Result Section -->
+                <div class="result-container" id="resultContainer">
+                    <h2 class="result-title">あなたのカラーはこちら！</h2>
+                    <div class="color-type" id="colorResult"></div>
+                    <div class="advice-section" id="adviceSection"></div>
+                    <button class="restart-button" onclick="restartDiagnosis()">もう一度診断する</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let answers = {};
+        let currentQuestion = 0;
+
+        function startDiagnosis() {
+            document.getElementById('welcome').style.display = 'none';
+            document.querySelector('.section:nth-child(2)').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            updateProgress();
+        }
+
+        function selectOption(questionNum, type, button) {
+            // Remove previous selections
+            const options = button.parentElement.querySelectorAll('.option-button');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selection to clicked button
+            button.classList.add('selected');
+            
+            // Store answer
+            if (type === 'season') {
+                answers[`question${questionNum}`] = {
+                    type: type,
+                    season: button.getAttribute('data-season')
+                };
+            } else {
+                answers[`question${questionNum}`] = {
+                    type: type,
+                    value: type
+                };
+            }
+            
+            // Enable next button
+            const nextBtn = document.getElementById(`nextBtn${questionNum}`);
+            nextBtn.classList.add('enabled');
+        }
+
+        function nextQuestion(current) {
+            const nextBtn = document.getElementById(`nextBtn${current}`);
+            if (!nextBtn.classList.contains('enabled')) return;
+            
+            // Hide current question
+            document.getElementById(`question${current}`).classList.remove('active');
+            
+            // Show next question with delay for smooth transition
+            setTimeout(() => {
+                if (current < 8) {
+                    document.getElementById(`question${current + 1}`).classList.add('active');
+                }
+                currentQuestion = current;
+                updateProgress();
+            }, 300);
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / 8) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResult() {
+            const nextBtn = document.getElementById('nextBtn8');
+            if (!nextBtn.classList.contains('enabled')) return;
+            
+            // Hide current question
+            document.getElementById('question8').classList.remove('active');
+            
+            // Calculate result
+            setTimeout(() => {
+                const result = calculateResult();
+                displayResult(result);
+                document.getElementById('resultContainer').style.display = 'block';
+                updateProgress();
+            }, 300);
+        }
+
+        function calculateResult() {
+            let yellowCount = 0;
+            let blueCount = 0;
+            let seasonVotes = { spring: 0, summer: 0, autumn: 0, winter: 0 };
+            
+            // Count base color votes
+            for (let i = 1; i <= 6; i++) {
+                const answer = answers[`question${i}`];
+                if (answer && answer.value === 'yellow') yellowCount++;
+                if (answer && answer.value === 'blue') blueCount++;
+            }
+            
+            // Count season votes
+            for (let i = 7; i <= 8; i++) {
+                const answer = answers[`question${i}`];
+                if (answer && answer.season) {
+                    seasonVotes[answer.season]++;
+                }
+            }
+            
+            // Determine base color
+            const baseColor = yellowCount > blueCount ? 'yellow' : 'blue';
+            
+            // Determine season
+            let season = 'spring';
+            let maxVotes = 0;
+            for (let s in seasonVotes) {
+                if (seasonVotes[s] > maxVotes) {
+                    maxVotes = seasonVotes[s];
+                    season = s;
+                }
+            }
+            
+            // Adjust season based on base color if needed
+            if (baseColor === 'yellow' && (season === 'summer' || season === 'winter')) {
+                season = yellowCount > 4 ? 'autumn' : 'spring';
+            } else if (baseColor === 'blue' && (season === 'spring' || season === 'autumn')) {
+                season = blueCount > 4 ? 'winter' : 'summer';
+            }
+            
+            return { baseColor, season };
+        }
+
+        function displayResult(result) {
+            const resultDiv = document.getElementById('colorResult');
+            const adviceDiv = document.getElementById('adviceSection');
+            
+            const seasonNames = {
+                spring: 'スプリング（春）',
+                summer: 'サマー（夏）',
+                autumn: 'オータム（秋）',
+                winter: 'ウィンター（冬）'
+            };
+            
+            const baseColorName = result.baseColor === 'yellow' ? 'イエローベース' : 'ブルーベース';
+            
+            resultDiv.innerHTML = `${baseColorName}の${seasonNames[result.season]}`;
+            resultDiv.className = `color-type ${result.baseColor}-base`;
+            
+            // Generate advice
+            const advice = generateAdvice(result.baseColor, result.season);
+            adviceDiv.innerHTML = advice;
+        }
+
+        function generateAdvice(baseColor, season) {
+            const advice = {
+                yellow: {
+                    spring: {
+                        colors: ['#FFB6C1', '#FF7F50', '#FFD700', '#98FB98', '#87CEEB'],
+                        clothing: 'コーラルピンク、ピーチ、アイボリー、ライトキャメル、ターコイズブルーなどの明るく暖かい色',
+                        makeup: 'コーラル系のチーク、オレンジ系のリップ、ゴールドアイシャドウ',
+                        avoid: '黒、グレー、濃いネイビーなどの重い色は避けて'
+                    },
+                    autumn: {
+                        colors: ['#A0522D', '#D2691E', '#CD853F', '#DAA520', '#8FBC8F'],
+                        clothing: 'テラコッタ、オリーブグリーン、マスタード、ベージュ、ダークブラウンなどの深く温かい色',
+                        makeup: 'ブラウン系のアイシャドウ、オレンジベージュのリップ、ブロンズチーク',
+                        avoid: '蛍光色やパステル調の薄い色は避けて'
+                    }
+                },
+                blue: {
+                    summer: {
+                        colors: ['#E6E6FA', '#B0C4DE', '#F0E68C', '#DDA0DD', '#F5DEB3'],
+                        clothing: 'ラベンダー、ライトグレー、ソフトピンク、ミントブルー、パウダーブルーなどの上品で涼しげな色',
+                        makeup: 'ローズピンクのチーク、ベリー系のリップ、シルバーやラベンダーのアイシャドウ',
+                        avoid: 'オレンジや黄色がかった色は避けて'
+                    },
+                    winter: {
+                        colors: ['#000080', '#8B008B', '#DC143C', '#228B22', '#000000'],
+                        clothing: 'ロイヤルブルー、エメラルドグリーン、フューシャピンク、純白、漆黒などのクリアで鮮やかな色',
+                        makeup: '真っ赤なリップ、ダークブラウンのアイライナー、シルバーアクセサリー',
+                        avoid: 'くすんだ色やベージュ系は避けて'
+                    }
+                }
+            };
+
+            const seasonAdvice = advice[baseColor][season];
+            
+            let colorPalette = '';
+            seasonAdvice.colors.forEach(color => {
+                colorPalette += `<div class="color-swatch" style="background-color: ${color}"></div>`;
+            });
+
+            return `
+                <div class="advice-content">
+                    <h4>💄 メイクのポイント</h4>
+                    <p>${seasonAdvice.makeup}がおすすめです。</p>
+                </div>
+                <div class="advice-content">
+                    <h4>👗 似合うお洋服の色</h4>
+                    <p>${seasonAdvice.clothing}を選ぶと、お肌が美しく輝いて見えます。</p>
+                    <div class="color-palette">${colorPalette}</div>
+                </div>
+                <div class="advice-content">
+                    <h4>⚠️ 避けた方が良い色</h4>
+                    <p>${seasonAdvice.avoid}ください。</p>
+                </div>
+            `;
+        }
+
+        function restartDiagnosis() {
+            answers = {};
+            currentQuestion = 0;
+            
+            // Reset all questions
+            document.querySelectorAll('.question-container').forEach((q, index) => {
+                q.classList.remove('active');
+                if (index === 0) q.classList.add('active');
+                
+                // Reset selections
+                q.querySelectorAll('.option-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // Reset next buttons
+                q.querySelectorAll('.next-button').forEach(btn => {
+                    btn.classList.remove('enabled');
+                });
+            });
+            
+            // Hide result
+            document.getElementById('resultContainer').style.display = 'none';
+            
+            // Reset progress
+            updateProgress();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

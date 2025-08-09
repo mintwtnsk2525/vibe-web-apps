@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>あなたの強み発見診断 - 自分らしく輝ける道を見つけよう</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', 'Meiryo', 'メイリオ', sans-serif;
+            background: linear-gradient(135deg, rgba(255,182,193,0.8), rgba(173,216,230,0.8), rgba(255,218,185,0.8)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect width="1920" height="1080" fill="%23fef7f0"/><circle cx="150" cy="200" r="100" fill="%23ffb3d9" opacity="0.4"/><circle cx="700" cy="150" r="80" fill="%23b3e0ff" opacity="0.5"/><circle cx="1200" cy="300" r="120" fill="%23ffe0b3" opacity="0.4"/><circle cx="400" cy="600" r="90" fill="%23d9b3ff" opacity="0.6"/><circle cx="1600" cy="500" r="110" fill="%23b3ffcc" opacity="0.4"/><circle cx="200" cy="900" r="70" fill="%23ffccb3" opacity="0.5"/><circle cx="900" cy="800" r="95" fill="%23ccb3ff" opacity="0.4"/><circle cx="1500" cy="900" r="85" fill="%23b3ffff" opacity="0.6"/><circle cx="600" cy="400" r="75" fill="%23ffb3cc" opacity="0.5"/></svg>');
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            width: 100%;
+            transition: all 0.6s ease;
+            position: relative;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1, #f9ca24);
+            border-radius: 27px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .content-card:hover::before {
+            opacity: 0.7;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #ff6b9d, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #6c5ce7;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        .question-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .question-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .question-title {
+            font-size: 1.8rem;
+            color: #2d3436;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: #636e72;
+            margin-bottom: 35px;
+            line-height: 1.8;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .option-button {
+            padding: 20px 15px;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            color: #2d3436;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-button:nth-child(1) {
+            background: linear-gradient(135deg, #ff7675, #fd79a8);
+        }
+
+        .option-button:nth-child(2) {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .option-button:nth-child(3) {
+            background: linear-gradient(135deg, #55a3ff, #4ecdc4);
+            color: white;
+        }
+
+        .option-button:nth-child(4) {
+            background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+        }
+
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .option-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border-color: #fff;
+        }
+
+        .option-button:hover::before {
+            left: 100%;
+        }
+
+        .option-button.selected {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            border-color: #fff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25); }
+            50% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(116, 185, 255, 0.2);
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b9d, #4ecdc4, #45b7d1);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .start-button, .next-button {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-button::before, .next-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .start-button:hover::before, .next-button:hover::before {
+            left: 100%;
+        }
+
+        .start-button:hover, .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.4);
+            background: linear-gradient(135deg, #a29bfe, #fd79a8);
+        }
+
+        .next-button {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transition: opacity 0.4s ease;
+        }
+
+        .next-button.enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .personality-type {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(108, 92, 231, 0.5); }
+            to { box-shadow: 0 0 30px rgba(255, 107, 157, 0.7); }
+        }
+
+        .leader-type {
+            background: linear-gradient(135deg, #ff6b9d, #fd79a8);
+            color: white;
+        }
+
+        .helper-type {
+            background: linear-gradient(135deg, #4ecdc4, #45b7d1);
+            color: white;
+        }
+
+        .creator-type {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+        }
+
+        .thinker-type {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+        }
+
+        .encouragement-section {
+            margin-top: 35px;
+            text-align: left;
+        }
+
+        .encouragement-message {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1), rgba(78, 205, 196, 0.1));
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ff6b9d;
+            position: relative;
+        }
+
+        .encouragement-message::before {
+            content: '💪';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+        }
+
+        .encouragement-message h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .encouragement-message p {
+            color: #636e72;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .job-suggestions {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1));
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4ecdc4;
+            position: relative;
+        }
+
+        .job-suggestions::before {
+            content: '🌟';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+        }
+
+        .job-suggestions h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .job-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .job-tag {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .strengths-section {
+            background: linear-gradient(135deg, rgba(162, 155, 254, 0.1), rgba(108, 92, 231, 0.1));
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid #a29bfe;
+            position: relative;
+        }
+
+        .strengths-section::before {
+            content: '✨';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+        }
+
+        .strength-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .strength-item {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 30px;
+            box-shadow: 0 10px 20px rgba(253, 121, 168, 0.3);
+        }
+
+        .restart-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(253, 121, 168, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .content-card { padding: 40px 25px; }
+            .options-grid { grid-template-columns: 1fr; }
+            .question-title { font-size: 1.5rem; }
+            .personality-type { font-size: 2rem; }
+            .strength-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Section -->
+        <section class="section">
+            <div class="content-card" id="welcome">
+                <h1>あなたの強み発見診断</h1>
+                <p class="subtitle">自分らしく輝ける道を見つけて、<br>自信を持って歩み出しましょう</p>
+                <button class="start-button" onclick="startDiagnosis()">診断を始める</button>
+            </div>
+        </section>
+
+        <!-- Question Sections -->
+        <section class="section">
+            <div class="content-card">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="question-container active" id="question1">
+                    <h2 class="question-title">質問 1 / 10</h2>
+                    <p class="question-text">グループで何かを決めるとき、あなたはどうしますか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(1, 'leader', this)">
+                            積極的に意見を言って、みんなをまとめる
+                        </button>
+                        <button class="option-button" onclick="selectOption(1, 'helper', this)">
+                            みんなの意見を聞いて、調整役になる
+                        </button>
+                        <button class="option-button" onclick="selectOption(1, 'creator', this)">
+                            新しいアイデアや視点を提案する
+                        </button>
+                        <button class="option-button" onclick="selectOption(1, 'thinker', this)">
+                            情報を整理して、論理的に分析する
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn1" onclick="nextQuestion(1)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question2">
+                    <h2 class="question-title">質問 2 / 10</h2>
+                    <p class="question-text">仕事をする上で一番大切だと思うことは？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(2, 'leader', this)">
+                            目標を達成し、結果を出すこと
+                        </button>
+                        <button class="option-button" onclick="selectOption(2, 'helper', this)">
+                            チームの和を保ち、みんなで協力すること
+                        </button>
+                        <button class="option-button" onclick="selectOption(2, 'creator', this)">
+                            新しいことに挑戦し、創造性を発揮すること
+                        </button>
+                        <button class="option-button" onclick="selectOption(2, 'thinker', this)">
+                            正確で質の高い仕事をすること
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn2" onclick="nextQuestion(2)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question3">
+                    <h2 class="question-title">質問 3 / 10</h2>
+                    <p class="question-text">困っている人を見かけたとき、あなたの反応は？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(3, 'leader', this)">
+                            すぐに行動を起こして、解決に向けて動く
+                        </button>
+                        <button class="option-button" onclick="selectOption(3, 'helper', this)">
+                            優しく声をかけて、話を聞いてあげる
+                        </button>
+                        <button class="option-button" onclick="selectOption(3, 'creator', this)">
+                            新しい解決方法やアプローチを考える
+                        </button>
+                        <button class="option-button" onclick="selectOption(3, 'thinker', this)">
+                            状況を分析して、最適な解決策を提案する
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn3" onclick="nextQuestion(3)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question4">
+                    <h2 class="question-title">質問 4 / 10</h2>
+                    <p class="question-text">新しいプロジェクトが始まるとき、あなたの気持ちは？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(4, 'leader', this)">
+                            責任を持って、プロジェクトを成功に導きたい
+                        </button>
+                        <button class="option-button" onclick="selectOption(4, 'helper', this)">
+                            チームメンバーをサポートしたい
+                        </button>
+                        <button class="option-button" onclick="selectOption(4, 'creator', this)">
+                            わくわくして、新しいアイデアを生み出したい
+                        </button>
+                        <button class="option-button" onclick="selectOption(4, 'thinker', this)">
+                            計画を立てて、リスクを検討したい
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn4" onclick="nextQuestion(4)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question5">
+                    <h2 class="question-title">質問 5 / 10</h2>
+                    <p class="question-text">あなたが一番エネルギーを感じるのはどんなとき？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(5, 'leader', this)">
+                            目標を達成したとき
+                        </button>
+                        <button class="option-button" onclick="selectOption(5, 'helper', this)">
+                            誰かの役に立てたとき
+                        </button>
+                        <button class="option-button" onclick="selectOption(5, 'creator', this)">
+                            新しいアイデアが浮かんだとき
+                        </button>
+                        <button class="option-button" onclick="selectOption(5, 'thinker', this)">
+                            複雑な問題を解決できたとき
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn5" onclick="nextQuestion(5)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question6">
+                    <h2 class="question-title">質問 6 / 10</h2>
+                    <p class="question-text">ストレスを感じるのはどんな状況？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(6, 'leader', this)">
+                            進歩が見えないとき
+                        </button>
+                        <button class="option-button" onclick="selectOption(6, 'helper', this)">
+                            人間関係がうまくいかないとき
+                        </button>
+                        <button class="option-button" onclick="selectOption(6, 'creator', this)">
+                            創造性を発揮できないとき
+                        </button>
+                        <button class="option-button" onclick="selectOption(6, 'thinker', this)">
+                            情報が不足しているとき
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn6" onclick="nextQuestion(6)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question7">
+                    <h2 class="question-title">質問 7 / 10</h2>
+                    <p class="question-text">理想の働き方は？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(7, 'leader', this)">
+                            チームを率いて、大きな成果を出す
+                        </button>
+                        <button class="option-button" onclick="selectOption(7, 'helper', this)">
+                            みんなで協力して、和やかに仕事をする
+                        </button>
+                        <button class="option-button" onclick="selectOption(7, 'creator', this)">
+                            自由な発想で、革新的な仕事をする
+                        </button>
+                        <button class="option-button" onclick="selectOption(7, 'thinker', this)">
+                            専門性を活かして、質の高い仕事をする
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn7" onclick="nextQuestion(7)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question8">
+                    <h2 class="question-title">質問 8 / 10</h2>
+                    <p class="question-text">褒められると嬉しいのはどんなこと？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(8, 'leader', this)">
+                            リーダーシップを評価されること
+                        </button>
+                        <button class="option-button" onclick="selectOption(8, 'helper', this)">
+                            優しさや思いやりを評価されること
+                        </button>
+                        <button class="option-button" onclick="selectOption(8, 'creator', this)">
+                            アイデアや創造性を評価されること
+                        </button>
+                        <button class="option-button" onclick="selectOption(8, 'thinker', this)">
+                            知識や分析力を評価されること
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn8" onclick="nextQuestion(8)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question9">
+                    <h2 class="question-title">質問 9 / 10</h2>
+                    <p class="question-text">休日に何をしているとき、一番リラックスできますか？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(9, 'leader', this)">
+                            新しいことに挑戦したり、目標に向かって努力する
+                        </button>
+                        <button class="option-button" onclick="selectOption(9, 'helper', this)">
+                            家族や友人との時間を大切に過ごす
+                        </button>
+                        <button class="option-button" onclick="selectOption(9, 'creator', this)">
+                            趣味や芸術活動に没頭する
+                        </button>
+                        <button class="option-button" onclick="selectOption(9, 'thinker', this)">
+                            読書や学習をして、知識を深める
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn9" onclick="nextQuestion(9)">次の質問へ</button>
+                </div>
+
+                <div class="question-container" id="question10">
+                    <h2 class="question-title">質問 10 / 10</h2>
+                    <p class="question-text">あなたが大切にしている価値観は？</p>
+                    <div class="options-grid">
+                        <button class="option-button" onclick="selectOption(10, 'leader', this)">
+                            成果と成長
+                        </button>
+                        <button class="option-button" onclick="selectOption(10, 'helper', this)">
+                            調和と思いやり
+                        </button>
+                        <button class="option-button" onclick="selectOption(10, 'creator', this)">
+                            自由と創造性
+                        </button>
+                        <button class="option-button" onclick="selectOption(10, 'thinker', this)">
+                            正確性と論理性
+                        </button>
+                    </div>
+                    <button class="next-button" id="nextBtn10" onclick="showResult()">結果を見る</button>
+                </div>
+
+                <!-- Result Section -->
+                <div class="result-container" id="resultContainer">
+                    <h2 class="result-title">あなたの強みはこちら！</h2>
+                    <div class="personality-type" id="personalityResult"></div>
+                    <div class="encouragement-section" id="encouragementSection"></div>
+                    <button class="restart-button" onclick="restartDiagnosis()">もう一度診断する</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let answers = {};
+        let currentQuestion = 0;
+
+        function startDiagnosis() {
+            document.getElementById('welcome').style.display = 'none';
+            document.querySelector('.section:nth-child(2)').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            updateProgress();
+        }
+
+        function selectOption(questionNum, type, button) {
+            const options = button.parentElement.querySelectorAll('.option-button');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            button.classList.add('selected');
+            
+            answers[`question${questionNum}`] = type;
+            
+            const nextBtn = document.getElementById(`nextBtn${questionNum}`);
+            nextBtn.classList.add('enabled');
+        }
+
+        function nextQuestion(current) {
+            const nextBtn = document.getElementById(`nextBtn${current}`);
+            if (!nextBtn.classList.contains('enabled')) return;
+            
+            document.getElementById(`question${current}`).classList.remove('active');
+            
+            setTimeout(() => {
+                if (current < 10) {
+                    document.getElementById(`question${current + 1}`).classList.add('active');
+                }
+                currentQuestion = current;
+                updateProgress();
+            }, 300);
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / 10) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResult() {
+            const nextBtn = document.getElementById('nextBtn10');
+            if (!nextBtn.classList.contains('enabled')) return;
+            
+            document.getElementById('question10').classList.remove('active');
+            
+            setTimeout(() => {
+                const result = calculateResult();
+                displayResult(result);
+                document.getElementById('resultContainer').style.display = 'block';
+                updateProgress();
+            }, 300);
+        }
+
+        function calculateResult() {
+            let scores = { leader: 0, helper: 0, creator: 0, thinker: 0 };
+            
+            for (let i = 1; i <= 10; i++) {
+                const answer = answers[`question${i}`];
+                if (answer) {
+                    scores[answer]++;
+                }
+            }
+            
+            let maxScore = 0;
+            let personalityType = 'leader';
+            
+            for (let type in scores) {
+                if (scores[type] > maxScore) {
+                    maxScore = scores[type];
+                    personalityType = type;
+                }
+            }
+            
+            return personalityType;
+        }
+
+        function displayResult(personalityType) {
+            const resultDiv = document.getElementById('personalityResult');
+            const encouragementDiv = document.getElementById('encouragementSection');
+            
+            const personalityData = {
+                leader: {
+                    name: 'リーダータイプ',
+                    class: 'leader-type',
+                    encouragement: '✨ あなたは生まれながらのリーダーです！',
+                    description: 'あなたには人を引っ張っていく素晴らしい力があります。目標に向かって努力し、チームを成功に導く能力は本当に貴重な才能です。自信を持って、あなたらしいリーダーシップを発揮してください。',
+                    strengths: ['決断力', '責任感', '行動力', '統率力', '目標達成能力'],
+                    jobs: ['管理職', '営業', 'プロジェクトマネージャー', '起業家', 'コンサルタント', 'チームリーダー']
+                },
+                helper: {
+                    name: 'サポータータイプ',
+                    class: 'helper-type',
+                    encouragement: '💝 あなたの優しさは世界を明るくします！',
+                    description: 'あなたの思いやりと協調性は、周りの人にとってなくてはならない存在です。人の気持ちに寄り添い、チームの和を保つ能力は素晴らしい才能です。あなたがいることで、きっと多くの人が救われています。',
+                    strengths: ['協調性', '思いやり', '聞き上手', '調整力', '忍耐力'],
+                    jobs: ['人事', 'カウンセラー', '看護師', '教師', '事務職', '接客業']
+                },
+                creator: {
+                    name: 'クリエータータイプ',
+                    class: 'creator-type',
+                    encouragement: '🎨 あなたの創造力は無限大です！',
+                    description: 'あなたの豊かな発想力と創造性は、新しい価値を生み出す力です。既存の枠にとらわれない自由な思考は、イノベーションを起こす原動力となります。あなたのアイデアを信じて、どんどん表現してください。',
+                    strengths: ['創造性', '発想力', '独創性', '柔軟性', 'アイデア力'],
+                    jobs: ['デザイナー', 'クリエイター', 'マーケティング', '企画職', 'アーティスト', '研究開発']
+                },
+                thinker: {
+                    name: '分析思考タイプ',
+                    class: 'thinker-type',
+                    encouragement: '🧠 あなたの論理的思考は貴重な武器です！',
+                    description: 'あなたの分析力と論理的思考は、複雑な問題を解決する強力なツールです。情報を正確に処理し、本質を見抜く能力は多くの場面で重宝されます。あなたの知識と分析力を活かして、世界をより良くしてください。',
+                    strengths: ['分析力', '論理的思考', '問題解決力', '専門性', '慎重性'],
+                    jobs: ['エンジニア', 'データアナリスト', '研究者', '会計士', 'システム開発', 'コンサルタント']
+                }
+            };
+
+            const data = personalityData[personalityType];
+            
+            resultDiv.innerHTML = data.name;
+            resultDiv.className = `personality-type ${data.class}`;
+            
+            const jobTags = data.jobs.map(job => `<span class="job-tag">${job}</span>`).join('');
+            const strengthItems = data.strengths.map(strength => `<div class="strength-item">${strength}</div>`).join('');
+            
+            encouragementDiv.innerHTML = `
+                <div class="encouragement-message">
+                    <h3>${data.encouragement}</h3>
+                    <p>${data.description}</p>
+                    <p>どんな時も、あなたには素晴らしい価値があることを忘れないでください。自分を信じて、一歩ずつ前に進んでいけばきっと素敵な未来が待っています。</p>
+                </div>
+                <div class="strengths-section">
+                    <h4>✨ あなたの強み</h4>
+                    <div class="strength-list">${strengthItems}</div>
+                </div>
+                <div class="job-suggestions">
+                    <h4>🌟 向いているお仕事</h4>
+                    <p>あなたの性格と強みを活かせるお仕事の例です。参考にして、自分らしく働ける場所を見つけてくださいね。</p>
+                    <div class="job-list">${jobTags}</div>
+                </div>
+            `;
+        }
+
+        function restartDiagnosis() {
+            answers = {};
+            currentQuestion = 0;
+            
+            document.querySelectorAll('.question-container').forEach((q, index) => {
+                q.classList.remove('active');
+                if (index === 0) q.classList.add('active');
+                
+                q.querySelectorAll('.option-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                q.querySelectorAll('.next-button').forEach(btn => {
+                    btn.classList.remove('enabled');
+                });
+            });
+            
+            document.getElementById('resultContainer').style.display = 'none';
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('load', () => {
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
