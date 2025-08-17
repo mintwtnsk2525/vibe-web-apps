@@ -38,7 +38,8 @@
       "Bash(start member-search.html)",
       "WebFetch(domain:llachouse-5x53pksyr-mintwtnsk2525s-projects.vercel.app)",
       "Bash(mv:*)",
-      "Bash(start https://llachouse.vercel.app/)"
+      "Bash(start https://llachouse.vercel.app/)",
+      "Bash(explorer .)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
