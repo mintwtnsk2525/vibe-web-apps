@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毎日の日報アプリ</title>
+    <meta name="description" content="毎日の日報を簡単に作成・管理できるWebアプリケーション">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="date"], input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="date"]:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .report-list {
+            margin-top: 20px;
+        }
+
+        .report-item {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .report-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .report-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .report-section {
+            margin-bottom: 15px;
+        }
+
+        .report-section h4 {
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+
+        .report-section p {
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-bottom: 1px solid #dee2e6;
+                border-right: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 毎日の日報</h1>
+            <p>今日も一日お疲れ様でした</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('create')">新規作成</button>
+            <button class="tab" onclick="switchTab('history')">履歴・検索</button>
+        </div>
+
+        <div class="content">
+            <div id="create-tab">
+                <div id="success-message" class="success-message hidden">
+                    日報を保存しました！
+                </div>
+                
+                <form id="report-form">
+                    <div class="form-group">
+                        <label for="report-date">日付</label>
+                        <input type="date" id="report-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="work-content">今日の作業内容</label>
+                        <textarea id="work-content" placeholder="今日行った作業を記入してください" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="achievements">成果・良かった点</label>
+                        <textarea id="achievements" placeholder="今日の成果や良かった点を記入してください"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="issues">問題点・課題</label>
+                        <textarea id="issues" placeholder="問題点や今後の課題を記入してください"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tomorrow-plan">明日の予定</label>
+                        <textarea id="tomorrow-plan" placeholder="明日の予定や取り組むことを記入してください"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">保存する</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">クリア</button>
+                </form>
+            </div>
+
+            <div id="history-tab" class="hidden">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="日付で検索 (YYYY-MM-DD)" onkeyup="searchReports()">
+                </div>
+                <div id="report-list" class="report-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 今日の日付を自動設定
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('report-date').value = today;
+            loadReports();
+        });
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            // タブボタンの状態を変更
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // タブコンテンツの表示を切り替え
+            if (tabName === 'create') {
+                document.getElementById('create-tab').classList.remove('hidden');
+                document.getElementById('history-tab').classList.add('hidden');
+            } else {
+                document.getElementById('create-tab').classList.add('hidden');
+                document.getElementById('history-tab').classList.remove('hidden');
+                loadReports();
+            }
+        }
+
+        // フォーム送信
+        document.getElementById('report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const report = {
+                date: document.getElementById('report-date').value,
+                workContent: document.getElementById('work-content').value,
+                achievements: document.getElementById('achievements').value,
+                issues: document.getElementById('issues').value,
+                tomorrowPlan: document.getElementById('tomorrow-plan').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // ローカルストレージに保存
+            let reports = JSON.parse(localStorage.getItem('dailyReports') || '[]');
+            
+            // 同じ日付の日報があれば更新、なければ追加
+            const existingIndex = reports.findIndex(r => r.date === report.date);
+            if (existingIndex !== -1) {
+                reports[existingIndex] = report;
+            } else {
+                reports.push(report);
+            }
+            
+            // 日付順でソート
+            reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            localStorage.setItem('dailyReports', JSON.stringify(reports));
+
+            // 成功メッセージを表示
+            const successMessage = document.getElementById('success-message');
+            successMessage.classList.remove('hidden');
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+
+            // フォームをリセット（日付は保持）
+            const currentDate = document.getElementById('report-date').value;
+            document.getElementById('report-form').reset();
+            document.getElementById('report-date').value = currentDate;
+        });
+
+        // フォームクリア
+        function clearForm() {
+            const currentDate = document.getElementById('report-date').value;
+            document.getElementById('report-form').reset();
+            document.getElementById('report-date').value = currentDate;
+        }
+
+        // 日報一覧を読み込み
+        function loadReports() {
+            const reports = JSON.parse(localStorage.getItem('dailyReports') || '[]');
+            const reportList = document.getElementById('report-list');
+            
+            if (reports.length === 0) {
+                reportList.innerHTML = '<p style="text-align: center; color: #666; margin-top: 50px;">まだ日報がありません</p>';
+                return;
+            }
+
+            reportList.innerHTML = reports.map(report => `
+                <div class="report-item">
+                    <div class="report-date">${formatDate(report.date)}</div>
+                    <div class="report-section">
+                        <h4>作業内容</h4>
+                        <p>${report.workContent || '-'}</p>
+                    </div>
+                    <div class="report-section">
+                        <h4>成果・良かった点</h4>
+                        <p>${report.achievements || '-'}</p>
+                    </div>
+                    <div class="report-section">
+                        <h4>問題点・課題</h4>
+                        <p>${report.issues || '-'}</p>
+                    </div>
+                    <div class="report-section">
+                        <h4>明日の予定</h4>
+                        <p>${report.tomorrowPlan || '-'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 日付フォーマット
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            const weekday = weekdays[date.getDay()];
+            
+            return `${year}年${month}月${day}日 (${weekday})`;
+        }
+
+        // 検索機能
+        function searchReports() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const reports = JSON.parse(localStorage.getItem('dailyReports') || '[]');
+            
+            const filteredReports = reports.filter(report => 
+                report.date.includes(searchTerm) ||
+                report.workContent.toLowerCase().includes(searchTerm) ||
+                report.achievements.toLowerCase().includes(searchTerm) ||
+                report.issues.toLowerCase().includes(searchTerm) ||
+                report.tomorrowPlan.toLowerCase().includes(searchTerm)
+            );
+
+            const reportList = document.getElementById('report-list');
+            
+            if (filteredReports.length === 0) {
+                reportList.innerHTML = '<p style="text-align: center; color: #666; margin-top: 50px;">検索結果が見つかりません</p>';
+                return;
+            }
+
+            reportList.innerHTML = filteredReports.map(report => `
+                <div class="report-item">
+                    <div class="report-date">${formatDate(report.date)}</div>
+                    <div class="report-section">
+                        <h4>作業内容</h4>
+                        <p>${report.workContent || '-'}</p>
+                    </div>
+                    <div class="report-section">
+                        <h4>成果・良かった点</h4>
+                        <p>${report.achievements || '-'}</p>
+                    </div>
+                    <div class="report-section">
+                        <h4>問題点・課題</h4>
+                        <p>${report.issues || '-'}</p>
+                    </div>
+                    <div class="report-section">
+                        <h4>明日の予定</h4>
+                        <p>${report.tomorrowPlan || '-'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

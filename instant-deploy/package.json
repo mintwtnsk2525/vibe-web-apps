@@ -1,0 +1,9 @@
+{
+  "name": "daily-report",
+  "version": "1.0.0",
+  "description": "Daily report app",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve ."
+  }
+}

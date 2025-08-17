@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花火大会アーカイブ集</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+        :root {
+            --dark-blue: #0c0c24;
+            --light-text: #f0f0f8;
+            --glow-color: rgba(255, 100, 150, 0.7);
+            --glow-color-past: rgba(100, 200, 255, 0.6);
+        }
+
+        body {
+            background-color: var(--dark-blue);
+            color: var(--light-text);
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            text-align: center;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        #video-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -2;
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(12, 12, 36, 0.75);
+            z-index: -1;
+        }
+
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--glow-color), 0 0 25px var(--glow-color);
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 4rem 0 2rem 0;
+            text-shadow: 0 0 10px var(--glow-color-past);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1300px;
+            margin: 0 auto;
+            text-align: left;
+            justify-content: center;
+        }
+
+        .event-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        #future-events .event-card:hover {
+             box-shadow: 0 0 40px var(--glow-color);
+        }
+        
+        #past-events .event-card:hover {
+             box-shadow: 0 0 40px var(--glow-color-past);
+        }
+
+        .event-card h2 {
+            font-size: 1.6rem;
+            margin-top: 0;
+            font-weight: 700;
+        }
+
+        #future-events .event-card h2 { color: #ffc1c1; }
+        #past-events .event-card h2 { color: #c1d9ff; }
+
+        .event-card .date {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        #future-events .event-card .date { color: #c1d9ff; }
+        #past-events .event-card .date { color: #a0b8e0; }
+        
+        .event-card .shots {
+            font-weight: 400;
+            color: #ffc1c1;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .event-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #d0d0e0;
+        }
+
+        .event-card a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--light-text);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+            align-self: flex-start;
+        }
+        
+        #future-events .event-card a { background-color: var(--glow-color); }
+        #past-events .event-card a { background-color: var(--glow-color-past); }
+
+        .event-card a:hover {
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="video-overlay"></div>
+    <video autoplay muted loop playsinline id="video-bg">
+        <source src="vecteezy_abstract-multicolor-golden-shining-glowing-fireworks-show_53327562.mp4" type="video/mp4">
+    </video>
+
+    <header>
+        <h1>花火大会アーカイブ集</h1>
+    </header>
+
+    <main>
+        <h2 class="section-title">花火大会アーカイブ集</h2>
+        <div id="past-events" class="calendar-grid"></div>
+    </main>
+
+    <script>
+        const pastEvents = [
+            {
+                name: '隅田川花火大会',
+                date: '2025年7月26日(土) 19:00～20:30',
+                shots: '約20,000発',
+                prefecture: '東京都',
+                description: '日本の夏を代表する、歴史と格式のある花火大会。東京の夜景を背景に、壮大な花火が打ち上がります。',
+                url: 'https://www.youtube.com/watch?v=0EaQ473LJJ0'
+            },
+            {
+                name: '諏訪湖祭湖上花火大会',
+                date: '2025年8月15日(金)',
+                shots: '約40,000発 (非公表)',
+                prefecture: '長野県',
+                description: '湖上から打ち上げられる花火が湖面に映り込み、幻想的な世界を創り出します。水上スターマインやナイアガラも必見。',
+                url: 'https://www.youtube.com/watch?v=uzyhHZVqTpA'
+            },
+            {
+                name: '長岡まつり大花火大会',
+                date: '2025年8月2日(土)・3日(日)',
+                shots: '約20,000発 (2日間合計)',
+                prefecture: '新潟県',
+                description: '日本三大花火の一つ。復興のシンボル「フェニックス」や、正三尺玉の迫力は必見です。',
+                url: 'https://www.youtube.com/watch?v=8MQerB70Fqo'
+            },
+            {
+                name: '大曲の花火',
+                date: '2025年8月30日(土)',
+                shots: '約18,000発',
+                prefecture: '秋田県',
+                description: '日本で最も権威のある花火競技大会。内閣総理大臣賞が授与される、まさに最高峰の芸術花火の祭典です。',
+                url: 'https://www.youtube.com/watch?v=yDVqA_ot0-4'
+            }
+        ];
+
+        // Sort events by date (simple string sort for this format)
+        pastEvents.sort((a, b) => a.date.localeCompare(b.date));
+
+        function renderEvents(containerId, events) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear previous content
+            events.forEach(event => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.innerHTML = `
+                    <div>
+                        <h2>${event.name}</h2>
+                        <p class="date">${event.date}</p>
+                        <p class="shots">打ち上げ数：${event.shots}</p>
+                        <p class="prefecture">開催地：${event.prefecture}</p>
+                        <p>${event.description}</p>
+                    </div>
+                    <a href="${event.url}" target="_blank" rel="noopener noreferrer">配信をチェック</a>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        renderEvents('past-events', pastEvents);
+    </script>
+</body>
+</html>
